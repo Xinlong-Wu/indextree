@@ -217,9 +217,12 @@ pub fn tree(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     let mut action_buffer: Vec<Action> = Vec::new();
 
     while let Some(item) = stack.pop() {
-        let Either::Left(IndexNode { node, children }) = item else {
-            action_buffer.push(Action::Parent);
-            continue;
+        let (node, children) = match item {
+            Either::Left(IndexNode { node, children }) => (node, children),
+            Either::Right(_) => {
+                action_buffer.push(Action::Parent);
+                continue;
+            }
         };
 
         action_buffer.push(Action::Append(node));
